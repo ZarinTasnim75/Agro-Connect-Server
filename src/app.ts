@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import prisma from "./lib/prisma.js";
 
 const app = express();
 
@@ -11,6 +12,22 @@ app.get("/", (_req, res) => {
     success: true,
     message: "AgroConnect API is running",
   });
+});
+
+app.get("/api/health", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+
+    res.json({
+      success: true,
+      message: "Database connection is healthy",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed",
+    });
+  }
 });
 
 export default app;
